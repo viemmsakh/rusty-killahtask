@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/csv"
 	"fmt"
 	"os"
 	"os/user"
@@ -25,10 +26,6 @@ var addCommand = &cobra.Command{
 	Aliases: []string{"a"},
 	Long:    `This command will add a item to your list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// homeDir, err := os.UserHomeDir()
-		// checkError(err)
-		// fmt.Printf("home is: %s\n", homeDir)
-
 		currUsr, err := user.Current()
 		checkError(err)
 		fmt.Printf("Curr user: %s\n", currUsr)
@@ -40,7 +37,7 @@ var addCommand = &cobra.Command{
 		}
 
 		var fileExist bool = true
-		var fileName string = "killahtask" + currUsr.Username + ".csv"
+		var fileName string = "killahtask_" + currUsr.Username + ".csv"
 		var filePath string = filepath.Join(currUsr.HomeDir, fileName)
 		_, err = os.Stat(filePath)
 		if err != nil {
@@ -50,8 +47,19 @@ var addCommand = &cobra.Command{
 		if fileExist {
 			fmt.Println("This is where we would get the last id")
 		} else {
-			fmt.Println("We can create a new file starting at 0")
+			file, err := os.Create(filePath)
+			checkError(err)
+			defer file.Close();
+
+			records := [][]string{
+				{"task_id", "description", "created", "completed"},
+				{"0", args[0], "a few seconds ago", "false"},
+			}
+			w := csv.NewWriter(file)
+			w.WriteAll(records)
+			checkError(w.Error())
 		}
+		fmt.Println("Record added successfully. Run \"killahtask list\" to see your task.")
 	},
 }
 
