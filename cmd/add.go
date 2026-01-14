@@ -7,6 +7,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -44,12 +45,10 @@ var addCommand = &cobra.Command{
 			fileExist = false
 		}
 
-		if fileExist {
-			fmt.Println("This is where we would get the last id")
-		} else {
+		if !fileExist {
 			file, err := os.Create(filePath)
 			checkError(err)
-			defer file.Close();
+			defer file.Close()
 
 			records := [][]string{
 				{"task_id", "description", "created", "completed"},
@@ -58,6 +57,32 @@ var addCommand = &cobra.Command{
 			w := csv.NewWriter(file)
 			w.WriteAll(records)
 			checkError(w.Error())
+		} else {
+			file, err := os.Open(filePath)
+			checkError(err)
+
+			csvReader := csv.NewReader(file)
+			// Read all the records from the CSV file
+			records, err := csvReader.ReadAll()
+			file.Close()
+			checkError(err)
+			fmt.Println(records)
+
+			if len(records) > 0 {
+				lastId, err := strconv.Atoi(records[len(records)-1][0])
+				checkError(err)
+				newId := strconv.Itoa(lastId + 1)
+
+				records = append(records, []string{newId, args[0], "few seconds ago", "false"})
+				fmt.Printf("new records %v\n", records)
+				file, err := os.Create(filePath)
+				checkError(err)
+				defer file.Close()
+
+				csvWriter := csv.NewWriter(file)
+				csvWriter.WriteAll(records)
+				checkError(csvWriter.Error())
+			}
 		}
 		fmt.Println("Record added successfully. Run \"killahtask list\" to see your task.")
 	},
