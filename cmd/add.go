@@ -4,8 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-	"os/user"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
@@ -70,15 +68,13 @@ var addCommand = &cobra.Command{
 	Aliases: []string{"a"},
 	Long:    `This command will add a item to your list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		currUsr, err := user.Current()
-		checkError(err)
 		var earlyExit bool = false
 
 		if len(args) == 0 {
-			PrintUsageMsg("add", "add_none")
+			PrintMsg("add", "add_none")
 			earlyExit = true
 		} else if len(args) > 1 { // A shitty way of making the user wrap their command in double quotes lol
-			PrintUsageMsg("add", "add_to_many")
+			PrintMsg("add", "add_to_many")
 			earlyExit = true
 		}
 
@@ -88,20 +84,22 @@ var addCommand = &cobra.Command{
 
 		var description string = strings.TrimSpace(args[0])
 		var fileExist bool = true
-		var fileName string = "killahtask_" + currUsr.Username + ".csv"
-		var filePath string = filepath.Join(currUsr.HomeDir, fileName)
 		// os.OpenFile doesn't have a way of letting us know if the file already exist.
-		_, err = os.Stat(filePath)
-		if err != nil {
+		_, err := os.Stat(CurrentUser.Filepath)
+		if os.IsNotExist(err) {
+			fmt.Println("here?")
 			fileExist = false
+		} else {
+			checkError(err)
 		}
 
-		file, err := loadFile(filePath)
+		file, err := loadFile(CurrentUser.Filepath)
 		// File will get closed even in the event of an error.
 		defer closeFile(file)
 		checkError(err)
 
 		if !fileExist {
+			fmt.Println("shit doesnt exist")
 			records := [][]string{
 				{"task_id", "description", "created", "completed"},
 				{"0", description, Now(), "false"},
@@ -126,7 +124,11 @@ var addCommand = &cobra.Command{
 
 				// Append the new record to the end of the slice.
 				records = append(records, []string{newId, description, Now(), "false"})
-				writeCSV(file, records)
+				// Since the file already exist the file pointer is at byte 0.
+				// Writing the file without truncating/seeking will duplicate header + rows.
+				file.Truncate(0) // Cuts the file down to byte making an empty file.
+				file.Seek(0, 0) // Moves the file pointer back to the beginning
+				writeCSV(file, records) // Re-write the file with the new records
 			}
 		}
 		fmt.Printf("Task \"%s\" added successfully!\n", description)
