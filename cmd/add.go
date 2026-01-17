@@ -12,16 +12,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func uniqueDescription(task string, records [][]string) bool {
-	for _, record := range records[1:] {
-		if task == record[1] {
-			return false
-		}
-	}
-
-	return true
-}
-
 func Now() string {
 	return time.Now().UTC().Format(time.RFC3339)
 }

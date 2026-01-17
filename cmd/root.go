@@ -15,13 +15,22 @@ type User struct {
 	Filepath string
 }
 
+func uniqueDescription(task string, records [][]string) bool {
+	for _, record := range records[1:] {
+		if task == record[1] {
+			return false
+		}
+	}
+
+	return true
+}
+
 func PrintMsg(command string, msgCase string) {
 	switch msgCase {
 	case "add_none":
 		fmt.Println("Missing task description")
 	case "add_to_many":
 		fmt.Println("Too many arguments passed to the \"add\" command")
-
 	}
 
 	switch command {
