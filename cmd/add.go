@@ -87,7 +87,6 @@ var addCommand = &cobra.Command{
 		// os.OpenFile doesn't have a way of letting us know if the file already exist.
 		_, err := os.Stat(CurrentUser.Filepath)
 		if os.IsNotExist(err) {
-			fmt.Println("here?")
 			fileExist = false
 		} else {
 			checkError(err)
@@ -99,7 +98,6 @@ var addCommand = &cobra.Command{
 		checkError(err)
 
 		if !fileExist {
-			fmt.Println("shit doesnt exist")
 			records := [][]string{
 				{"task_id", "description", "created", "completed"},
 				{"0", description, Now(), "false"},
