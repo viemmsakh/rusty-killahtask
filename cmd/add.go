@@ -6,56 +6,20 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 
+	"github.com/slipperystairs/killahtask/task"
 	"github.com/spf13/cobra"
 )
 
-func writeCSV(file *os.File, records [][]string) {
-	w := csv.NewWriter(file)
-	w.WriteAll(records)
-	checkError(w.Error())
-}
-
-func loadFile(filepath string) (*os.File, error) {
-	// Open or create file if it doesn't exist.
-	f, err := os.OpenFile(filepath, os.O_RDWR|os.O_CREATE, os.ModePerm)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to open file for reading")
-	}
-
-	// Exclusive lock obtained on the file descriptor
-	if err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX); err != nil {
-		_ = f.Close()
-		return nil, err
-	}
-
-	return f, nil
-}
-
-func closeFile(f *os.File) error {
-	syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
-	return f.Close()
-}
-
 func uniqueDescription(task string, records [][]string) bool {
-	var isUnique bool = true
-
-	for _, record := range records {
-		for _, r := range record {
-			if task == r {
-				isUnique = false
-				break
-			}
-		}
-
-		if !isUnique {
-			break
+	for _, record := range records[1:] {
+		if task == record[1] {
+			return false
 		}
 	}
 
-	return isUnique
+	return true
 }
 
 func Now() string {
@@ -69,7 +33,6 @@ var addCommand = &cobra.Command{
 	Long:    `This command will add a item to your list`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var earlyExit bool = false
-
 		if len(args) == 0 {
 			PrintMsg("add", "add_none")
 			earlyExit = true
@@ -89,29 +52,30 @@ var addCommand = &cobra.Command{
 		if os.IsNotExist(err) {
 			fileExist = false
 		} else {
-			checkError(err)
+			task.CheckError(err)
 		}
 
-		file, err := loadFile(CurrentUser.Filepath)
+		file, err := task.LoadFile(CurrentUser.Filepath)
 		// File will get closed even in the event of an error.
-		defer closeFile(file)
-		checkError(err)
+		defer task.CloseFile(file)
+		task.CheckError(err)
 
 		if !fileExist {
 			records := [][]string{
 				{"task_id", "description", "created", "completed"},
 				{"0", description, Now(), "false"},
 			}
-			writeCSV(file, records)
+			err := task.WriteCSV(file, records)
+			task.CheckError(err)
 		} else {
 			csvReader := csv.NewReader(file)
 			records, err := csvReader.ReadAll()
-			checkError(err)
+			task.CheckError(err)
 
 			if len(records) > 0 {
 				// Get the last task_id used and increment it by one.
 				lastId, err := strconv.Atoi(records[len(records)-1][0])
-				checkError(err)
+				task.CheckError(err)
 				newId := strconv.Itoa(lastId + 1)
 
 				if !uniqueDescription(description, records) {
@@ -121,13 +85,11 @@ var addCommand = &cobra.Command{
 
 				// Append the new record to the end of the slice.
 				records = append(records, []string{newId, description, Now(), "false"})
-				// Since the file already exist the file pointer is at byte 0.
-				// Writing the file without truncating/seeking will duplicate header + rows.
-				file.Truncate(0)        // Cuts the file down to byte making an empty file.
-				file.Seek(0, 0)         // Moves the file pointer back to the beginning
-				writeCSV(file, records) // Re-write the file with the new records
+				err = task.WriteCSV(file, records) // Re-write the file with the new records
+				task.CheckError(err)
 			}
 		}
+
 		fmt.Printf("Task \"%s\" added successfully!\n", description)
 	},
 }

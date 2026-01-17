@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"os/user"
 	"path/filepath"
 
+	"github.com/slipperystairs/killahtask/task"
 	"github.com/spf13/cobra"
 )
 
@@ -13,13 +13,6 @@ type User struct {
 	Username *user.User
 	Filename string
 	Filepath string
-}
-
-func checkError(e error) {
-	if e != nil {
-		fmt.Fprintln(os.Stderr, e)
-		os.Exit(1)
-	}
 }
 
 func PrintMsg(command string, msgCase string) {
@@ -53,7 +46,7 @@ var CurrentUser User
 
 func init() {
 	currUser, err := user.Current()
-	checkError(err)
+	task.CheckError(err)
 
 	CurrentUser = User{
 		Username: currUser,
@@ -64,5 +57,5 @@ func init() {
 
 func Execute() {
 	err := rootCmd.Execute()
-	checkError(err)
+	task.CheckError(err)
 }
