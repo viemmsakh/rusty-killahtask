@@ -18,7 +18,7 @@ var headerMap = map[string]string{
 	"completed":   "Completed",
 }
 
-func PrintRecords(w *tabwriter.Writer, records [][]string) {
+func printRecords(w *tabwriter.Writer, records [][]string) {
 	header := records[0]
 	if len(header) != 4 {
 		panic("Header must have 4 columns.")
