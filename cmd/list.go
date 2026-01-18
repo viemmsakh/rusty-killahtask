@@ -62,7 +62,7 @@ var listCommand = &cobra.Command{
 		} else {
 			w := tabwriter.NewWriter(os.Stdout, 0, 4, 3, ' ', 0)
 			defer w.Flush()
-			PrintRecords(w, records)
+			printRecords(w, records)
 		}
 
 	},
