@@ -21,6 +21,8 @@ var headerMap = map[string]string{
 	"completed":   "Completed",
 }
 
+// Parse the time string using the RFC3339 standard i.e., "2026-01-020T15:04:05Z07:00"
+// returns the difference in human readable format.
 func timeDiff(rec string) string {
 	parsed, _ := time.Parse(time.RFC3339, rec)
 	return timediff.TimeDiff(parsed)
@@ -54,6 +56,7 @@ func printRecords(w *tabwriter.Writer, records [][]string, all bool) {
 		}
 
 		diff := timeDiff(rec[2])
+		// If the sub flag is passed then we show the "Completed" column and all of the task
 		if !all && rec[3] != "true" {
 			fmt.Fprintf(w, "%s\t%s\t%s\n",
 				rec[0],
