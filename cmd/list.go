@@ -4,9 +4,10 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-	"strings"
 	"text/tabwriter"
+	"time"
 
+	"github.com/mergestat/timediff"
 	"github.com/slipperystairs/killahtask/task"
 	"github.com/spf13/cobra"
 )
@@ -20,9 +21,13 @@ var headerMap = map[string]string{
 	"completed":   "Completed",
 }
 
+func timeDiff(rec string) string {
+	parsed, _ := time.Parse(time.RFC3339, rec)
+	return timediff.TimeDiff(parsed)
+}
+
 // The conditions where panic is called should never happen, but we might as well be prepared.
 func printRecords(w *tabwriter.Writer, records [][]string, all bool) {
-	fmt.Printf("all here: %t\n", all)
 	header := records[0]
 	if len(header) != 4 {
 		panic("Header must have 4 columns.")
@@ -48,21 +53,24 @@ func printRecords(w *tabwriter.Writer, records [][]string, all bool) {
 			panic("Records must have 4 columns.")
 		}
 
-		if all {
-			fmt.Fprintln(w, strings.Join(rec, "\t"))
-		} else if rec[3] != "true" {
+		diff := timeDiff(rec[2])
+		if !all && rec[3] != "true" {
 			fmt.Fprintf(w, "%s\t%s\t%s\n",
 				rec[0],
 				rec[1],
-				rec[2],
+				diff,
+			)
+		} else if all {
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n",
+				rec[0],
+				rec[1],
+				diff,
+				rec[3],
 			)
 		}
 	}
 }
 
-// todo =>  - Don't forget to use timediff to print out the time in words
-// todo =>  - Close the file at this point
-// todo => Figure out how to use the text/tabwriter package to print the records into a table
 var listCommand = &cobra.Command{
 	Use:     "list",
 	Aliases: []string{"l"},
