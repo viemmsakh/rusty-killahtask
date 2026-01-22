@@ -25,20 +25,30 @@ func uniqueDescription(task string, records [][]string) bool {
 	return true
 }
 
-func PrintMsg(command string, msgCase string) {
+func PrintMsg(command *string, msgCase string) {
 	switch msgCase {
 	case "add_none":
-		fmt.Println("Missing task description")
+		fmt.Println("Missing task description.")
 	case "add_to_many":
-		fmt.Println("Too many arguments passed to the \"add\" command")
+		fmt.Println("Too many arguments passed to the \"add\" command.")
+	case "comp_to_many":
+		fmt.Println("Too many arguments passed to the \"complete\" command.")
+	case "unknown_id":
+		fmt.Println("ID could not be found.")
 	}
 
-	switch command {
-	case "add":
-		fmt.Println("Usage: killahtask add \"my description\"")
+	if command != nil {
+		switch *command {
+		case "add":
+			fmt.Println("Usage: killahtask add \"my description\"")
+		case "complete":
+			fmt.Println("Usage: killatask complete <taskid>")
+		}
 	}
 }
 
+var command string
+var CurrentUser User
 var rootCmd = &cobra.Command{
 	Use:   "killahtask",
 	Short: "Killah Task is a todo CLI tool.",
@@ -50,8 +60,6 @@ var rootCmd = &cobra.Command{
 		}
 	},
 }
-
-var CurrentUser User
 
 func init() {
 	currUser, err := user.Current()
