@@ -36,3 +36,5 @@ Task description isn't unique! "some other really cool task" already exist.
 ## List
 
 ## Completed
+
+## Delete
