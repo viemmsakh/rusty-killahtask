@@ -25,14 +25,14 @@ var deleteCommand = &cobra.Command{
 			task.CheckError(err)
 
 			// Create the new records from scratch
-			var newRecords [][]string
+			newRecords := [][]string{}
 			for _, rec := range records {
 				if rec[0] != args[0] {
 					newRecords = append(newRecords, rec)
 				}
 			}
 
-			if len(newRecords) == len(records){
+			if len(newRecords) == len(records) {
 				PrintMsg(nil, "unknown_id")
 			} else {
 				err = task.WriteCSV(file, newRecords)

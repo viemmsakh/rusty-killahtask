@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var all bool
+var showAll bool
 
 var headerMap = map[string]string{
 	"task_id":     "ID",
@@ -24,7 +24,10 @@ var headerMap = map[string]string{
 // Parse the time string using the RFC3339 standard i.e., "2026-01-020T15:04:05Z07:00"
 // returns the difference in human readable format.
 func timeDiff(rec string) string {
-	parsed, _ := time.Parse(time.RFC3339, rec)
+	parsed, err := time.Parse(time.RFC3339, rec)
+	if err != nil {
+		return "invalid time"
+	}
 	return timediff.TimeDiff(parsed)
 }
 
@@ -32,7 +35,8 @@ func timeDiff(rec string) string {
 func printRecords(w *tabwriter.Writer, records [][]string, all bool) {
 	header := records[0]
 	if len(header) != 4 {
-		panic("Header must have 4 columns.")
+		fmt.Fprintln(os.Stderr, "Invalid task file format")
+		return
 	}
 
 	if !all {
@@ -52,7 +56,8 @@ func printRecords(w *tabwriter.Writer, records [][]string, all bool) {
 
 	for _, rec := range records[1:] {
 		if len(rec) != 4 {
-			panic("Records must have 4 columns.")
+			fmt.Fprintln(os.Stderr, "Invalid task record format")
+			return
 		}
 
 		diff := timeDiff(rec[2])
@@ -92,13 +97,13 @@ var listCommand = &cobra.Command{
 		} else {
 			w := tabwriter.NewWriter(os.Stdout, 0, 4, 5, ' ', 0)
 			defer w.Flush()
-			printRecords(w, records, all)
+			printRecords(w, records, showAll)
 		}
 
 	},
 }
 
 func init() {
-	listCommand.Flags().BoolVarP(&all, "all", "a", false, "Shows all flag task items (alias: -a)")
+	listCommand.Flags().BoolVarP(&showAll, "all", "a", false, "Shows all flag task items (alias: -a)")
 	rootCmd.AddCommand(listCommand)
 }
