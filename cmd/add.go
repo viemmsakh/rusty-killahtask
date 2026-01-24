@@ -16,6 +16,10 @@ func Now() string {
 	return time.Now().UTC().Format(time.RFC3339)
 }
 
+func printSuccess(msg string) {
+	fmt.Printf("%s", msg)
+}
+
 var addCommand = &cobra.Command{
 	Use:     "add",
 	Short:   "Adds a new item",
@@ -32,17 +36,21 @@ var addCommand = &cobra.Command{
 			PrintMsg(&command, "add_to_many")
 			earlyExit = true
 		}
-
+		
 		if earlyExit {
 			os.Exit(1)
 		}
-
+			
 		var description string = strings.TrimSpace(args[0])
-		var fileExist bool = true
+		var successMsg string = fmt.Sprintf("Task \"%s\" added successfully!\n", description)
+		var isNewFile bool = true
+
 		// os.OpenFile doesn't have a way of letting us know if the file already exist.
-		_, err := os.Stat(CurrentUser.Filepath)
-		if os.IsNotExist(err) {
-			fileExist = false
+		fileInfo, err := os.Stat(CurrentUser.Filepath)
+		// We check the file size because I ran into a bug during development where my file existed but it was empty.
+		// Treat it like a new file we the user falls into this case for whatever reason.
+		if os.IsNotExist(err) || fileInfo.Size() == 0 {
+			isNewFile = false
 		} else {
 			task.CheckError(err)
 		}
@@ -52,13 +60,14 @@ var addCommand = &cobra.Command{
 		defer task.CloseFile(file)
 		task.CheckError(err)
 
-		if !fileExist {
+		if !isNewFile {
 			records := [][]string{
 				{"task_id", "description", "created", "completed"},
 				{"0", description, Now(), "false"},
 			}
 			err := task.WriteCSV(file, records)
 			task.CheckError(err)
+			printSuccess(successMsg)
 		} else {
 			csvReader := csv.NewReader(file)
 			records, err := csvReader.ReadAll()
@@ -79,10 +88,10 @@ var addCommand = &cobra.Command{
 				records = append(records, []string{newId, description, Now(), "false"})
 				err = task.WriteCSV(file, records) // Re-write the file with the new records
 				task.CheckError(err)
+				printSuccess(successMsg)
 			}
 		}
-
-		fmt.Printf("Task \"%s\" added successfully!\n", description)
+		
 	},
 }
 
