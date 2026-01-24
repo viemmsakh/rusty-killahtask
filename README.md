@@ -9,6 +9,37 @@ dilly@dilly:~$ killahtask complete <task_id>
 dilly@dilly:~$ killahtask delete <task_id>
 ```
 
+After cloning the repo, you can build the tool directly into /usr/local/bin (or run it locally from the project directory):
+```bash
+dilly@dilly:~/projects/killahtask$ sudo go build -o /usr/local/bin/killahtask
+```
+Then run:
+```
+killahtask
+```
+Output:
+```
+No commands were passed to the killah...see below
+A todo task tool that does things
+
+Usage:
+  killahtask [flags]
+  killahtask [command]
+
+Available Commands:
+  add         Adds a new item
+  complete    Completes an item on the list
+  completion  Generate completion script
+  delete      Delete an item in your list
+  help        Help about any command
+  list        List the items in your list
+
+Flags:
+  -h, --help   help for killahtask
+
+Use "killahtask [command] --help" for more information about a command.
+```
+
 ## Add
 Running `killahtask add "my task"` will add a task to your to a CSV file in your home directory (not OS restricted). This command can get executed with an alias (i.e., `killahtask a "my task"`). Both will patterns will achieve the same thing.
 
