@@ -11,7 +11,8 @@ import (
 var deleteCommand = &cobra.Command{
 	Use:     "delete",
 	Aliases: []string{"d"},
-	Short:   "Delete an item in your list",
+	Short: "Deletes and item.",
+	Long:   "Delete an item in your list and recreates the items in the CSV file.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			command = "delete"

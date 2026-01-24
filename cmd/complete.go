@@ -12,7 +12,7 @@ var completeCommand = &cobra.Command{
 	Use:     "complete",
 	Short:   "Completes an item on the list",
 	Aliases: []string{"c"},
-	Long:    `This command will complete and item on your list`,
+	Long:    `Completes and item in your list by marking the "Completed" column as true.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		command = "complete"
 		if len(args) == 0 {

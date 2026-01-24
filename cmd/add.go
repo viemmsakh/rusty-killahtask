@@ -20,7 +20,7 @@ var addCommand = &cobra.Command{
 	Use:     "add",
 	Short:   "Adds a new item",
 	Aliases: []string{"a"},
-	Long:    `This command will add a item to your list`,
+	Long:    `Adds a task to your list of TODOs by creating or updating your ~/killahtask_<username>.csv file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		earlyExit := false
 		if len(args) == 0 {
