@@ -20,7 +20,7 @@ killahtask
 Output:
 ```
 No commands were passed to the killah...see below
-A todo task tool that does things
+A todo task tool that performs simple CRUD operations.
 
 Usage:
   killahtask [flags]
