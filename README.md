@@ -50,7 +50,7 @@ dilly@dilly:~$ killahtask a "some other really cool task"
 Task "some other really cool task" added successfully!
 ```
 
-The `add` command does require the task to be wrapped in double quotes. Otherwise the CLI will throw an error.
+Descriptions must be wrapped in double quotes. Otherwise the CLI will throw an error.
 
 ```
 dilly@dilly:~$ killahtask a task without double quotes
@@ -58,7 +58,7 @@ Too many arguments passed to the "add" command
 Usage: killahtask add "my description"
 ```
 
-Task descriptions are also required to be unique.
+Task descriptions must be unique.
 
 ```
 dilly@dilly:~$ killahtask a "some other really cool task"
@@ -107,7 +107,7 @@ ID     Description                    Created         Completed
 ```
 
 ## Delete
-This command will remove the task from your CSV file. A `task_id` must be passed as an argument is required for the command to succeed.
+A `task_id` must be passed as an argument is required for the `delete` command to succeed.
 ```
 dilly@dilly:~$ killahtask delete
 Task ID is missing!
