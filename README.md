@@ -9,7 +9,7 @@ dilly@dilly:~$ killahtask complete <task_id>
 dilly@dilly:~$ killahtask delete <task_id>
 ```
 
-After cloning the repo, you can build the tool directly into /usr/local/bin (or run it locally from the project directory):
+After cloning the repo, you can build the tool directly into /usr/local/bin (Note: `go build` needs to get executed in the project directory):
 ```bash
 dilly@dilly:~/projects/killahtask$ sudo go build -o /usr/local/bin/killahtask
 ```
