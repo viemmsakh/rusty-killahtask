@@ -27,7 +27,7 @@ var addCommand = &cobra.Command{
 			command = "add"
 			PrintMsg(&command, "add_none")
 			earlyExit = true
-		} else if len(args) > 1 { // A shitty way of making the user wrap their command in double quotes lol
+		} else if len(args) > 1 { // A shitty way of making the user wrap their description in double quotes lol
 			command = "add"
 			PrintMsg(&command, "add_to_many")
 			earlyExit = true
