@@ -1,6 +1,6 @@
 module github.com/slipperystairs/killahtask
 
-go 1.24.1
+go 1.25.0
 
 require (
 	github.com/mergestat/timediff v0.0.4
