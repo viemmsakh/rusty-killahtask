@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"slices"
 	"strings"
-
 )
 
 func CowSay(lines []string) {
