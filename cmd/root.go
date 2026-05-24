@@ -27,10 +27,8 @@ func uniqueDescription(task string, records [][]string) bool {
 
 func PrintMsg(command *string, msgCase string) {
 	switch msgCase {
-	case "add_none":
+	case "missing_task":
 		fmt.Println("Missing task description.")
-	case "add_to_many":
-		fmt.Println("Too many arguments passed to the \"add\" command.")
 	case "comp_none", "delete_none":
 		fmt.Println("Task ID is missing!")
 	case "comp_too_many":
@@ -70,6 +68,8 @@ var rootCmd = &cobra.Command{
 func init() {
 	currUser, err := user.Current()
 	task.CheckError(err)
+
+	rootCmd.PersistentFlags().Bool("cowsay", false, "Use Cowsay to display output")
 
 	CurrentUser = User{
 		Username: currUser,
