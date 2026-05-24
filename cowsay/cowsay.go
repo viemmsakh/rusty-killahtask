@@ -14,7 +14,7 @@ func CowSay(lines []string) {
 	boxWidth := len(longestLine) + 4
 	repeated := strings.Repeat("-", boxWidth - 2)
 
-	fmt.Printf(" %s ", repeated)
+	fmt.Printf(" %s \n", repeated)
 	for _, line := range lines {
 		padLen := boxWidth - 4 - len(line)
 		if padLen < 0 {
@@ -25,5 +25,6 @@ func CowSay(lines []string) {
 		str := "| " + line + padding + " |\n"
 		fmt.Printf("%s", str)
 	}
-	fmt.Printf(" %s\n", repeated)
+	fmt.Printf(" %s \n", repeated)
+	fmt.Printf("        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n")
 }
