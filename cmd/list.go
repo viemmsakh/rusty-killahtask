@@ -9,14 +9,13 @@ import (
 	"time"
 
 	"github.com/mergestat/timediff"
-	"github.com/slipperystairs/killahtask/cowsay"
 	"github.com/slipperystairs/killahtask/task"
 	"github.com/spf13/cobra"
 )
 
 var (
 	showAll bool
-	buf strings.Builder
+	buf     strings.Builder
 )
 
 var headerMap = map[string]string{
@@ -118,12 +117,11 @@ var listCommand = &cobra.Command{
 			return tabwriterErr
 		}
 
-		if !cow {
-			fmt.Println(buf.String())
-		} else {
-			lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
-			cowsay.CowSay(lines)
+		split := false
+		if cow {
+			split = true
 		}
+		checkCowsay(buf.String(), split)
 
 		return nil
 	},

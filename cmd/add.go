@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/slipperystairs/killahtask/cowsay"
 	"github.com/slipperystairs/killahtask/task"
 	"github.com/spf13/cobra"
 )
@@ -51,7 +50,7 @@ var addCommand = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		// File will get closed even in the event of an error.
+		// File will close even in the event of an error.
 		defer task.CloseFile(file)
 
 		if !fileExists || !hasData {
@@ -96,13 +95,7 @@ var addCommand = &cobra.Command{
 			}
 		}
 
-		if !cow {
-			fmt.Printf("%s\n", successMsg)
-		} else {
-			lines := []string{successMsg}
-			cowsay.CowSay(lines)
-		}
-
+		checkCowsay(successMsg, false)
 		return nil
 	},
 }

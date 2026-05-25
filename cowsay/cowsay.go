@@ -12,7 +12,7 @@ func CowSay(lines []string) {
 		return len(a) - len(b)
 	})
 	boxWidth := len(longestLine) + 4
-	repeated := strings.Repeat("-", boxWidth - 2)
+	repeated := strings.Repeat("-", boxWidth-2)
 
 	fmt.Printf(" %s \n", repeated)
 	for _, line := range lines {

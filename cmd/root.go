@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"os/user"
 	"path/filepath"
+	"strings"
 
+	"github.com/slipperystairs/killahtask/cowsay"
 	"github.com/slipperystairs/killahtask/task"
 	"github.com/spf13/cobra"
 )
 
 var cow bool
+
 type User struct {
 	Username *user.User
 	Filename string
@@ -24,6 +27,19 @@ func uniqueDescription(task string, records [][]string) bool {
 	}
 
 	return true
+}
+
+func checkCowsay(message string, split bool) {
+	lines := []string{message}
+
+	if !cow {
+		fmt.Printf("%s\n", message)
+	} else {
+		if split {
+			lines = strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
+		}
+		cowsay.CowSay(lines)
+	}
 }
 
 var CurrentUser User

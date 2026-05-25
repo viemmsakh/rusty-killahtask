@@ -3,9 +3,7 @@ package cmd
 import (
 	"encoding/csv"
 	"errors"
-	"fmt"
 
-	"github.com/slipperystairs/killahtask/cowsay"
 	"github.com/slipperystairs/killahtask/task"
 	"github.com/spf13/cobra"
 )
@@ -13,8 +11,8 @@ import (
 var deleteCommand = &cobra.Command{
 	Use:     "delete",
 	Aliases: []string{"d"},
-	Short: "Deletes and item.",
-	Long:   "Delete an item in your list and recreates the items in the CSV file.",
+	Short:   "Deletes and item.",
+	Long:    "Delete an item in your list and recreates the items in the CSV file.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return errors.New("Task ID is missing!")
@@ -52,12 +50,7 @@ var deleteCommand = &cobra.Command{
 		}
 
 		msg := "Task " + args[0] + " removed successfully!"
-		if !cow {
-			fmt.Printf("%s\n", msg)
-		} else {
-			lines := []string{msg}
-			cowsay.CowSay(lines)
-		}
+		checkCowsay(msg, false)
 
 		return nil
 	},

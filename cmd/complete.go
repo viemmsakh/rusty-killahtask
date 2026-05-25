@@ -3,9 +3,7 @@ package cmd
 import (
 	"encoding/csv"
 	"errors"
-	"fmt"
 
-	"github.com/slipperystairs/killahtask/cowsay"
 	"github.com/slipperystairs/killahtask/task"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +13,7 @@ var completeCommand = &cobra.Command{
 	Short:   "Completes an item on the list",
 	Aliases: []string{"c"},
 	Long:    `Completes and item in your list by marking the "Completed" column as true.`,
-	RunE: func(cmd *cobra.Command, args []string) error{
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return errors.New("Task ID is missing!")
 		} else if len(args) > 1 {
@@ -46,18 +44,14 @@ var completeCommand = &cobra.Command{
 		if !found {
 			return errors.New("Task ID could not be found.")
 		}
+
 		csvErr := task.WriteCSV(file, records)
 		if csvErr != nil {
 			return csvErr
 		}
 
 		msg := "ID " + args[0] + " was marked as complete!"
-		if !cow {
-			fmt.Printf("%s\n", msg)
-		} else {
-			lines := []string{msg}
-			cowsay.CowSay(lines)
-		}
+		checkCowsay(msg, false)
 
 		return nil
 	},
