@@ -12,6 +12,7 @@ import (
 )
 
 var cow bool
+var descriptions = make(map[string]bool)
 
 type User struct {
 	Username *user.User
@@ -19,16 +20,10 @@ type User struct {
 	Filepath string
 }
 
-// TODO => I think we can make this better by using a hash map of sorts.
-// TODO => map[string]bool instead of records [][]string
-func uniqueDescription(task string, records [][]string) bool {
-	for _, record := range records[1:] {
-		fmt.Println(record)
-		if task == record[1] {
-			return false
-		}
+func uniqueDescription(task string) bool {
+	if descriptions[task] {
+		return false
 	}
-
 	return true
 }
 

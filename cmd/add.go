@@ -17,6 +17,14 @@ func Now() string {
 	return time.Now().UTC().Format(time.RFC3339)
 }
 
+func buildMap(records [][]string) {
+	for _, rec := range records[1:] {
+		if !descriptions[rec[1]] {
+			descriptions[rec[1]] = true
+		}
+	}
+}
+
 var addCommand = &cobra.Command{
 	Use:     "add",
 	Short:   "Adds a new item",
@@ -39,8 +47,6 @@ var addCommand = &cobra.Command{
 
 		// We check the file size because I ran into a bug during development where my file existed but it was empty.
 		// Treat it like a new file when the user falls into this case for whatever reason.
-		// TODO => Do more testing around this area to see if we can clean it up a bit.
-		// TODO => If not, lets add some more comments to explain our decision here because it reads a little weird.
 		hasData := fileExists && fileInfo.Size() > 0
 		if err != nil && !os.IsNotExist(err) {
 			return err
@@ -58,6 +64,7 @@ var addCommand = &cobra.Command{
 				{"task_id", "description", "created", "completed"},
 				{"0", description, Now(), "false"},
 			}
+			descriptions[description] = true
 
 			err := task.WriteCSV(file, records)
 			if err != nil {
@@ -67,7 +74,6 @@ var addCommand = &cobra.Command{
 			newId := "0"
 			csvReader := csv.NewReader(file)
 			records, err := csvReader.ReadAll()
-			// TODO => This is where we would check if our map has records before call uniqueDescription()
 			if err != nil {
 				return err
 			}
@@ -83,7 +89,10 @@ var addCommand = &cobra.Command{
 				newId = strconv.Itoa(lastId + 1)
 			}
 
-			if !uniqueDescription(description, records) {
+			buildMap(records)
+			if uniqueDescription(description) {
+				descriptions[description] = true
+			} else {
 				errStr := "Task description isn't unique!\n\"" + description + "\" already exists.\n"
 				return errors.New(errStr)
 			}
